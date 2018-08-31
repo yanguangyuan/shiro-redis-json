@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace命名空间，作用就是对sql进行分类化管理，用于sql隔离， mapper代理是namespace指定mapper接口的地址 -->
+<mapper namespace="com.ygy.shiro.mapper.UserMapper">
+	<resultMap id="BaseResultMap" type="com.ygy.shiro.po.User">
+		<result property="id" column="id" />
+		<result property="username" column="username" />
+		<result property="password" column="password" />
+	</resultMap>
+	<sql id="columns">
+		id,
+		username,
+		password
+	</sql>
+	<select id="selectByUsernameOrMobile" parameterType="string"
+		resultMap="BaseResultMap">
+		SELECT 
+		<include refid="columns"/>
+		FROM user 
+		WHERE username = #{value}
+	</select>
+</mapper>
