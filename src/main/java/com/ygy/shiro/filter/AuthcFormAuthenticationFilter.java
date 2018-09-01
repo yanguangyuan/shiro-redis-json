@@ -37,10 +37,11 @@ import com.ygy.shiro.service.UserService;
 
 public class AuthcFormAuthenticationFilter extends FormAuthenticationFilter {
 	public static final Logger LOGGER = LogManager.getLogger(AuthcFormAuthenticationFilter.class);
-	private UserService UserService;
+	private UserService userService;
+	
 	
 	public void setUserService(UserService userService) {
-		UserService = userService;
+		this.userService = userService;
 	}
 	@Override
 	protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
@@ -71,7 +72,7 @@ public class AuthcFormAuthenticationFilter extends FormAuthenticationFilter {
 		Session session = subject.getSession();
 		User user=null;
 		try {
-			user = UserService.selectByUsernameOrMobile((String)token.getPrincipal());
+			user = userService.selectByUsernameOrMobile((String)token.getPrincipal());
 		} catch (Exception e) {
 			e.printStackTrace();
 			LOGGER.info(e.getMessage());

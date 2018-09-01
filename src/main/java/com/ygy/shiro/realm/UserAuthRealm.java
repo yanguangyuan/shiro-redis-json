@@ -54,14 +54,15 @@ public class UserAuthRealm extends AuthorizingRealm {
 		try {
 			user=userService.selectByUsernameOrMobile(username);
 		} catch (Exception e) {
+			user=null;
 			LOGGER.error(e.getMessage());
-			e.printStackTrace();
 		}
-		//如果用户为空或者删除状态为2（已删除）
+		//判断用户情况，用户状态，主动抛出异常；
 		if(user==null) {
 			throw new UnknownAccountException("用户不存在");
 		}
 		String password=user.getPassword();
+		//未加盐
 		SimpleAuthenticationInfo info=new SimpleAuthenticationInfo(user, password, getName());
 		return info;
 	}

@@ -63,7 +63,9 @@
     </bean>
 
     <!-- 基于Form表单的身份验证过滤器 -->
-    <bean id="formAuthenticationFilter" class="com.ygy.shiro.filter.AuthcFormAuthenticationFilter"/>
+    <bean id="formAuthenticationFilter" class="com.ygy.shiro.filter.AuthcFormAuthenticationFilter">
+        <property name="userService" ref="userService"></property>
+    </bean>
 
     <bean id="logoutFilter" class="org.apache.shiro.web.filter.authc.LogoutFilter">
         <property name="redirectUrl" value="/login" />
