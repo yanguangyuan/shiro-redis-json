@@ -50,6 +50,7 @@ public class AuthcFormAuthenticationFilter extends FormAuthenticationFilter {
 		HttpServletRequest re = (HttpServletRequest) request;
 		String requestUrl=re.getRequestURL().toString();
 		System.out.println(requestUrl);
+		System.out.println(re.getRemoteHost());
 		boolean status=subject.isAuthenticated();
 		return status;
 	}
@@ -59,7 +60,19 @@ public class AuthcFormAuthenticationFilter extends FormAuthenticationFilter {
 		if (isLoginRequest(request, response) && isLoginSubmission(request, response)) {
             return executeLogin(request, response);
         }
-		//如果不是登录
+		//如果不是登录还没有认证过且访问的是需要权限的
+		//如果有token；
+		HttpServletRequest req = (HttpServletRequest) request;
+		ResponseEntity res = new ResponseEntity<>();
+		String token=req.getHeader(Constant.TOKEN);
+		if(token!=null) {
+			res.setCode(Constant.LOGIN_EXPIRE_CODE);
+			res.setRemark(Constant.LOGIN_EXPIRE_DESC);
+		}else {
+			res.setCode(Constant.NO_PERMISSION_CODE);
+			res.setRemark(Constant.NO_PERMISSION_DESC);
+		}
+		writeJsonResult(res, response);
 		return false;
 	}
 	@Override
@@ -67,8 +80,8 @@ public class AuthcFormAuthenticationFilter extends FormAuthenticationFilter {
 			ServletResponse response) throws Exception {
 		//登录认证成功
 		ResponseEntity<String> res = new ResponseEntity<>();
-		//生成token
-		String result = UUID.randomUUID().toString();
+		
+//		String result = UUID.randomUUID().toString();
 		Session session = subject.getSession();
 		User user=null;
 		try {
@@ -79,7 +92,15 @@ public class AuthcFormAuthenticationFilter extends FormAuthenticationFilter {
 		}
 		session.setAttribute("userInfo", user);
 		System.out.println(session.getId());
-		res.setResult(result);
+		//异常处理
+		String tokenInfo = "";
+		//生成token,借用token来代替cookie;
+		try {
+			tokenInfo=session.getId().toString();
+		}catch (Exception e) {
+			LOGGER.info(e.getMessage());
+		}
+		res.setResult(tokenInfo);
 		res.setCode(Constant.REQUEST_SUCCESS_CODE);
 		res.setRemark(Constant.REQUEST_SUCCESS_DESC);
 		writeJsonResult(res, response);
@@ -167,7 +188,8 @@ public class AuthcFormAuthenticationFilter extends FormAuthenticationFilter {
     }
 
     /**
-     * 读取请求中的json字符串，request.getReader()一次请求只能获取一次流，第二次获取将抛出流关闭异常
+     * 读取请求中的json字符串，request.getReader()一次请求只能获取一次流，第二次获取将抛出流关闭异常,
+     * 及登陆成功后不能把信息放入springmvc处理（springmvc绑定参数还会有用到）
      * @author ygy
      * @param request
      * @return

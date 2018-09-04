@@ -10,7 +10,7 @@ import java.io.Serializable;
 /**
 * project_name: ltp-web
 * package: com.gpl.saas.uc.shiro
-* describe: shiro的sessionid获取
+* describe: shiro的sessionid获取，无状态
 * @author : 严光远
 * creat_time: 2018年7月5日 上午10:47:16
 * 

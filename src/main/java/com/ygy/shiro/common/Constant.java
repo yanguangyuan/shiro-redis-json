@@ -41,4 +41,8 @@ public class Constant {
 	 * 登录失效描述 -- 登录已失效，请重新登录
 	 */
 	public static final String LOGIN_EXPIRE_DESC="登录已失效，请重新登录";
+	/**
+	 * token
+	 */
+	public static final String TOKEN="Token";
 }

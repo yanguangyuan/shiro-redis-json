@@ -24,13 +24,13 @@
     <!-- 会话ID生成器 -->
     <bean id="sessionIdGenerator" class="org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator"/>
 	<!-- 会话Cookie模板  maxAge=-1表示浏览器关闭时失效此Cookie-->
-    <bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+    <!-- <bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
         <constructor-arg name="name" value="ygy.session.id"/>
         <property name="httpOnly" value="true"/>
         <property name="maxAge" value="-1"/>
         <property name="domain" value=""/>
         <property name="path" value="/"/>
-    </bean>
+    </bean> -->
     <!-- 会话DAO -->
     <bean id="sessionDAO" class="com.ygy.shiro.realm.RedisSessionDao">
         <property name="sessionIdGenerator" ref="sessionIdGenerator"/>
@@ -45,9 +45,11 @@
         <property name="deleteInvalidSessions" value="true"/>
         <!-- 是否开启会话验证器任务 默认true -->
         <property name="sessionValidationSchedulerEnabled" value="true"/>
+        <!-- 验证时间间隔 ，需要配置Quartz会话验证调度器相关包-->
+        <!-- <property name="sessionValidationInterval" value="5000"/> -->
         <property name="sessionDAO" ref="sessionDAO"/>
-        <property name="sessionIdCookieEnabled" value="true"/>
-        <property name="sessionIdCookie" ref="sessionIdCookie"/>
+        <!-- <property name="sessionIdCookieEnabled" value="true"/>
+        <property name="sessionIdCookie" ref="sessionIdCookie"/> -->
     </bean>
 
     <!-- 安全管理器 -->
