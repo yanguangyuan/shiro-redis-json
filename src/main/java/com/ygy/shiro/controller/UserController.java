@@ -1,14 +1,11 @@
 package com.ygy.shiro.controller;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ygy.shiro.common.Constant;
 import com.ygy.shiro.common.ResponseEntity;
+import com.ygy.shiro.exception.MyException;
 import com.ygy.shiro.po.User;
 import com.ygy.shiro.service.UserService;
 import com.ygy.shiro.vo.UserLoginInfo;
@@ -72,7 +70,14 @@ public class UserController {
 		response.setRemark(Constant.REQUEST_SUCCESS_DESC);
 		return response;
 	}
+	/**
+	 * shiro session信息获取
+	 * @author 严光远
+	 * @return
+	 * 2018年9月5日 上午10:35:53
+	 */
 	@ResponseBody
+	@RequiresPermissions({"user:info"})
 	@ApiOperation(value="获取用户信息")
 	@RequestMapping(value="/info",method=RequestMethod.GET)
 	public ResponseEntity<User> userInfo(){
@@ -85,6 +90,41 @@ public class UserController {
 		response.setResult(user);
 		response.setCode(Constant.REQUEST_SUCCESS_CODE);
 		response.setRemark(Constant.REQUEST_SUCCESS_DESC);
+		return response;
+	}
+	@ResponseBody
+	@ApiOperation(value="异常测试")
+	@RequestMapping(value="/exceptionTest",method=RequestMethod.GET)
+	public ResponseEntity<User> userExceptionTest(){
+		ResponseEntity<User> response = new ResponseEntity<>();
+		throw new MyException("异常测试");
+//		return response;
+	}
+	/**
+	 * 权限测试，此权限不存在
+	 * @author 严光远
+	 * @return
+	 * 2018年9月5日 上午10:35:42
+	 */
+	@ResponseBody
+	@RequiresPermissions({"user:test"})
+	@ApiOperation(value="权限测试")
+	@RequestMapping(value="/authorizateTest",method=RequestMethod.GET)
+	public ResponseEntity<User> userAuthorizateTest(){
+		ResponseEntity<User> response = new ResponseEntity<>();
+		return response;
+	}
+	/**
+	 * 退出测试，只是做一个swagger接口
+	 * @author 严光远
+	 * @return
+	 * 2018年9月5日 上午10:35:42
+	 */
+	@ResponseBody
+	@ApiOperation(value="退出测试")
+	@RequestMapping(value="/logout",method=RequestMethod.GET)
+	public ResponseEntity<User> logout(){
+		ResponseEntity<User> response = new ResponseEntity<>();
 		return response;
 	}
 }

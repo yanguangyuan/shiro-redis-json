@@ -60,12 +60,11 @@ public class RedisSessionDao extends CachingSessionDAO {
             	//转为byte数组
                 byte[] key = sessionIdSerialize(session.getId());
                 byte[] value = serialize(session);
-                //redis过期时间
-//                int seconds = Long.valueOf(session.getTimeout()/1000).intValue();
+                //session过期时间
+                int seconds = Long.valueOf(session.getTimeout()/1000).intValue();
                 jedis.set(key, value);
-//                System.out.println("session过期时间"+seconds);
-                //已设置session过期删除redis数据
-//                jedis.expire(key, 1800);
+                //redis 数据保存过期时间
+                jedis.expire(key, seconds+10);
             } catch (Exception e) {
                 logger.error("Jedis保存SESSION异常", e);
             }

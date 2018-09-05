@@ -1,6 +1,12 @@
 package com.ygy.shiro.realm;
 
 
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.shiro.authc.AuthenticationException;
@@ -39,6 +45,14 @@ public class UserAuthRealm extends AuthorizingRealm {
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 		SimpleAuthorizationInfo info=new SimpleAuthorizationInfo();
+		Set<String> permissions=new HashSet<String>(3);
+		User user = (User) principals.getPrimaryPrincipal();
+		String id = user.getId();
+		String test = "user:info";
+		permissions.add(test);
+		//list用add
+//		info.addStringPermissions(permissions);
+		info.setStringPermissions(permissions);
 		return info;
 	}
 

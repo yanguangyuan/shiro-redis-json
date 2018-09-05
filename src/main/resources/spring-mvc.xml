@@ -70,5 +70,6 @@
 			</list>
 		</property>
 	</bean>
-	
+	<!-- 自定义异常处理 -->
+	<bean id="exceptionResolver" class="com.ygy.shiro.exception.MyExceptionResolver" />
 </beans>

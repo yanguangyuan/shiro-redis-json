@@ -69,9 +69,7 @@
         <property name="userService" ref="userService"></property>
     </bean>
 
-    <bean id="logoutFilter" class="org.apache.shiro.web.filter.authc.LogoutFilter">
-        <property name="redirectUrl" value="/login" />
-    </bean>
+    <bean id="logoutFilter" class="com.ygy.shiro.filter.MyLogoutFilter"/>
 
     <!-- Shiro的Web过滤器 -->
     <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
@@ -80,16 +78,16 @@
         <!-- 自定义filter -->
         <property name="filters">
             <util:map>
-            <!-- 自定义权限处理,如果不自定义，被权限拦截时会自动重定向到loginUrl配置，json交互式需要注意 -->
+            	<entry key="logout" value-ref="logoutFilter"/>
+            	<!-- 自定义权限处理,如果不自定义，被权限拦截时会自动重定向到loginUrl配置，json交互式需要注意 -->
                 <entry key="authc" value-ref="formAuthenticationFilter"/>
-                <entry key="logout" value-ref="logoutFilter"/>
             </util:map>
         </property>
         <!-- anon:允许匿名访问，authc需要认证 -->
         <property name="filterChainDefinitions">
             <value>
             	/login = authc
-            	
+            	/logout = logout
             	/swagger-ui.html=anon
             	/swagger-resources/**=anon
             	/swagger/**=anon
@@ -99,13 +97,18 @@
                 /favicon.ico = anon
                 
                 /static/** = anon
-                /logout = logout
                 /** = authc
             </value>
         </property>
     </bean>
-
-    <!-- Shiro生命周期处理器-->
+    <!-- Shiro生命周期处理器 可以自动的来调用配置在IOC中shiro bean的生命周期方法-->
     <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
-
+	<!-- 启用IOC容器中使用shiro的注解，但必须先配置声明周期 -->
+     <bean
+          class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+          depends-on="lifecycleBeanPostProcessor"></bean>
+     <bean
+          class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+          <property name="securityManager" ref="securityManager"></property>
+     </bean>
 </beans>
