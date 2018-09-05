@@ -3,7 +3,6 @@ package com.ygy.shiro.filter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.UUID;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.DisabledAccountException;
@@ -22,7 +20,6 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
@@ -45,23 +42,26 @@ public class AuthcFormAuthenticationFilter extends FormAuthenticationFilter {
 	}
 	@Override
 	protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-		//所有authc的访问都会先认证，认证通过放行，认证不通过执行onAccessDenied方法；
+		//如果认证状态为true将放行，为false执行onAccessDenied方法
 		Subject subject = getSubject(request, response);
 		HttpServletRequest re = (HttpServletRequest) request;
 		String requestUrl=re.getRequestURL().toString();
 		System.out.println(requestUrl);
 		System.out.println(re.getRemoteHost());
 		boolean status=subject.isAuthenticated();
+		if(status) {
+			User user = (User) subject.getPrincipal();
+			System.out.println(user.getUsername());
+		}
 		return status;
 	}
 	@Override
 	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-		//如果是登陆，直接执行登录认证；
+		//如果是登录
 		if (isLoginRequest(request, response) && isLoginSubmission(request, response)) {
             return executeLogin(request, response);
         }
-		//如果不是登录还没有认证过且访问的是需要权限的
-		//如果有token；
+		//如果有token但是没有认证成功
 		HttpServletRequest req = (HttpServletRequest) request;
 		ResponseEntity res = new ResponseEntity<>();
 		String token=req.getHeader(Constant.TOKEN);
@@ -78,23 +78,17 @@ public class AuthcFormAuthenticationFilter extends FormAuthenticationFilter {
 	@Override
 	protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request,
 			ServletResponse response) throws Exception {
-		//登录认证成功
+		//��¼��֤�ɹ�
 		ResponseEntity<String> res = new ResponseEntity<>();
 		
 //		String result = UUID.randomUUID().toString();
 		Session session = subject.getSession();
-		User user=null;
-		try {
-			user = userService.selectByUsernameOrMobile((String)token.getPrincipal());
-		} catch (Exception e) {
-			e.printStackTrace();
-			LOGGER.info(e.getMessage());
-		}
+		User user=(User) subject.getPrincipal();
 		session.setAttribute("userInfo", user);
 		System.out.println(session.getId());
-		//异常处理
+		
 		String tokenInfo = "";
-		//生成token,借用token来代替cookie;
+		//生成token,使用token代替cookie;
 		try {
 			tokenInfo=session.getId().toString();
 		}catch (Exception e) {
@@ -109,14 +103,14 @@ public class AuthcFormAuthenticationFilter extends FormAuthenticationFilter {
 	@Override
 	protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException e, ServletRequest request,
 			ServletResponse response) {
-		//登录认证失败
+		//登录失败
 		ResponseEntity res = new ResponseEntity<>();
 		if(e instanceof UnknownAccountException||e instanceof IncorrectCredentialsException) {
-			res.setRemark("用户名或密码错误");
+			res.setRemark("�û������������");
 		}else if(e instanceof DisabledAccountException) {
-			res.setRemark("用户已被禁用，请联系管理员开放");
+			res.setRemark("�û��ѱ����ã�����ϵ����Ա����");
 		}else if(e instanceof Exception) {
-			res.setRemark("登录失败");
+			res.setRemark("��¼ʧ��");
 		}
 		res.setCode(Constant.REQUEST_FAIL_CODE);
 		writeJsonResult(res, response);
@@ -124,7 +118,7 @@ public class AuthcFormAuthenticationFilter extends FormAuthenticationFilter {
 	}
 	@Override
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) {
-		//认证token创建
+		//创建认证token信息（json交互）
         String host = this.getHost(request);
         String username = this.getUsername(request);
         String password = this.getPassword(request);
@@ -144,12 +138,13 @@ public class AuthcFormAuthenticationFilter extends FormAuthenticationFilter {
         return this.createToken(username, password, rememberMe, host);
 
     }
+	
 	/**
-	 * 将结果转为json响应
+	 * 结果信息已json格式返回
 	 * @author ygy
 	 * @param result
 	 * @param response
-	 * 2018年8月31日 下午4:18:48
+	 * 2018年9月5日 下午3:18:28
 	 */
 	private void writeJsonResult(ResponseEntity result, ServletResponse response) {
 
@@ -164,12 +159,13 @@ public class AuthcFormAuthenticationFilter extends FormAuthenticationFilter {
             e.printStackTrace();
         }
     }
+    
     /**
-     * 从请求中获取json对象
+     * 从请求信息转化的字符串信息中，获取json对象
      * @author ygy
      * @param request
      * @return
-     * 2018年8月31日 下午4:21:03
+     * 2018年9月5日 下午3:18:48
      */
     private JSONObject getRequestBody(HttpServletRequest request) {
 
@@ -187,14 +183,14 @@ public class AuthcFormAuthenticationFilter extends FormAuthenticationFilter {
         return null;
     }
 
+    
     /**
-     * 读取请求中的json字符串，request.getReader()一次请求只能获取一次流，第二次获取将抛出流关闭异常,
-     * 及登陆成功后不能把信息放入springmvc处理（springmvc绑定参数还会有用到）
+     * 将请求信息转为字符串，request.getReader()只能获取一次；
      * @author ygy
      * @param request
      * @return
      * @throws IOException
-     * 2018年8月31日 下午4:20:02
+     * 2018年9月5日 下午3:19:29
      */
     private String getRequestBodyString(HttpServletRequest request) throws IOException {
         StringBuffer stringBuffer = new StringBuffer();

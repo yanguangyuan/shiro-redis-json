@@ -45,7 +45,7 @@
         <property name="deleteInvalidSessions" value="true"/>
         <!-- 是否开启会话验证器任务 默认true -->
         <property name="sessionValidationSchedulerEnabled" value="true"/>
-        <!-- 验证时间间隔 ，需要配置Quartz会话验证调度器相关包-->
+        <!-- 验证时间间隔 ，需要配置Quartz会话验证调度器相关包,很耗性能-->
         <!-- <property name="sessionValidationInterval" value="5000"/> -->
         <property name="sessionDAO" ref="sessionDAO"/>
         <!-- <property name="sessionIdCookieEnabled" value="true"/>

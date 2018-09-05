@@ -64,6 +64,7 @@ public class RedisSessionDao extends CachingSessionDAO {
                 int seconds = Long.valueOf(session.getTimeout()/1000).intValue();
                 jedis.set(key, value);
                 //redis 数据保存过期时间
+                //在web情况下，用户不进行操作将不清楚是否过期，因此讲redis中设置过期时间；
                 jedis.expire(key, seconds+10);
             } catch (Exception e) {
                 logger.error("Jedis保存SESSION异常", e);

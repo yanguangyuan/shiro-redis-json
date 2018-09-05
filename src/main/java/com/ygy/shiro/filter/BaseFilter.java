@@ -10,13 +10,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+
 /**
- * project_name: shiro-redis-json package: com.ygy.shiro.filter describe:
- * 基础filter，继承至CharacterEncodingFilter，借用服务
- * 
- * @author : ygy creat_time: 2018年8月31日 上午10:40:25
- * 
- **/
+* project_name: shiro-redis-json
+* package: com.ygy.shiro.filter
+* describe: 跨域访问设置
+* @author : 严光远
+* creat_time: 2018年9月5日 下午3:11:16
+* 
+**/
 public class BaseFilter extends CharacterEncodingFilter {
 
 	@Override
@@ -32,6 +34,7 @@ public class BaseFilter extends CharacterEncodingFilter {
 		    response.setHeader("Access-Control-Max-Age", "36000");
 		    response.setHeader("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With, token,device_type,req_uid,deviceType,reqUid");
 		    response.setHeader("Access-Control-Expose-Headers", "token");
+
 
 		    response.addHeader("P3P", "CP=IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT");
 		    if (!(checkVueOptionalRequest(request)))
