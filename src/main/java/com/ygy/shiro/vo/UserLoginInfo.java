@@ -22,8 +22,18 @@ public class UserLoginInfo {
 	/**
 	 * 密码
 	 */
-	@ApiModelProperty(name="username",value="用户名",required = true)
+	@ApiModelProperty(name="username",value="密码",required = true)
 	private String password;
+	/**
+	 * 隐藏测试
+	 */
+	@ApiModelProperty(name="hiddenTest",value="隐藏测试",hidden=true)
+	private String hiddenTest;
+	/**
+	 * 需求测试
+	 */
+	@ApiModelProperty(name="requiredTest",value="需求测试",required = false)
+	private String requiredTest;
 	public String getUsername() {
 		return username;
 	}

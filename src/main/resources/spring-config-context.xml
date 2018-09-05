@@ -17,7 +17,7 @@
             http://www.ctrip.com/schema/apollo
             http://www.ctrip.com/schema/apollo.xsd">
     <!-- 自动扫描 -->
-    <context:component-scan base-package="com.ygy" />
+    <context:component-scan base-package="com.ygy.shiro" />
     <!--加载数据库连接的配置文件，也可以直接在数据源中连接 ，也可以从配置中心获取 -->
      <!-- <context:property-placeholder location="classpath:db.properties" /> -->
      

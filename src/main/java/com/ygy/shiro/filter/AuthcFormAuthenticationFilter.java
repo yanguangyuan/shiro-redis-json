@@ -106,11 +106,11 @@ public class AuthcFormAuthenticationFilter extends FormAuthenticationFilter {
 		//登录失败
 		ResponseEntity res = new ResponseEntity<>();
 		if(e instanceof UnknownAccountException||e instanceof IncorrectCredentialsException) {
-			res.setRemark("�û������������");
+			res.setRemark("用户名或密码错误");
 		}else if(e instanceof DisabledAccountException) {
-			res.setRemark("�û��ѱ����ã�����ϵ����Ա����");
+			res.setRemark("用户已被禁用");
 		}else if(e instanceof Exception) {
-			res.setRemark("��¼ʧ��");
+			res.setRemark("登录错误");
 		}
 		res.setCode(Constant.REQUEST_FAIL_CODE);
 		writeJsonResult(res, response);
