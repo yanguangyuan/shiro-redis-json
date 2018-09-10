@@ -1,30 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>  
-<!DOCTYPE xml>
-<Configuration status="OFF">
-    <Appenders>
-        <Console name="CONSOLE" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{0} - %msg%n" />
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="OFF">
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss}|%-5p|%l|srj|%m%n"/>
         </Console>
-        <RollingFile name="ROLLING" fileName="/logs/ups-manager/log.log"
-             filePattern="/logs/log_%d{yyyy-MM-dd}_%i.log">
-            <PatternLayout pattern="%d %p %c{1.} [%t] %m%n"/>
-            <Policies>
-                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
-                <SizeBasedTriggeringPolicy size="1024 KB"/>
-            </Policies>
-            <DefaultRolloverStrategy max="100"/>
+        <RollingFile name="RollingFile" fileName="logs/shiro-redis-json.log"
+                     filePattern="logs/$${date:yyyy-MM}/srj-%d{MM-dd-yyyy}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss}|%-5p|%l|srj|%m%n"/>
+            <SizeBasedTriggeringPolicy size="200MB"/>
         </RollingFile>
-    </Appenders>
-    
-    <Loggers>
-        <Root level="info">
-            <AppenderRef ref="CONSOLE" />
-            <AppenderRef ref="ROLLING"/>
-        </Root>
-        
-        <!-- 控制某些包下的类的日志级别 -->
-        <Logger name="org.mybatis.spring" level="error">
-            <AppenderRef ref="CONSOLE"/>
-        </Logger>
-    </Loggers>
-</Configuration>
+    </appenders>
+    <loggers>
+        <root level="debug" includeLocation="true" additivity="false" >
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFile"/>
+        </root>
+    </loggers>
+</configuration>

@@ -1,6 +1,5 @@
 package com.ygy.shiro.controller;
 
-import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,7 +32,7 @@ import io.swagger.annotations.ApiOperation;
 * creat_time: 2018年8月31日 上午9:23:33
 * 
 **/
-@Api(value = "用户控制器",description = "用于用户登录等控制控制器")
+@Api(value = "用户控制器",description = "用于用户登录等控制器")
 @Controller
 public class UserController {
 
@@ -48,26 +47,12 @@ public class UserController {
 	 * 2018年8月31日 上午9:30:01
 	 */
 	@ResponseBody
-	@ApiOperation(value="登录")
+	@ApiOperation(value="登录",notes="登录接口描述")
 	@RequestMapping(value="/login",method=RequestMethod.POST)
 	public ResponseEntity<String> login(@RequestBody UserLoginInfo info){
 		ResponseEntity<String> response = new ResponseEntity<>();
-		//生成token
-		String result = UUID.randomUUID().toString();
-		Subject subject = SecurityUtils.getSubject();
-		Session session = subject.getSession();
-		User user=null;
-		try {
-			user = UserService.selectByUsernameOrMobile(info.getUsername());
-		} catch (Exception e) {
-			e.printStackTrace();
-			LOGGER.info(e.getMessage());
-		}
-		session.setAttribute("userInfo", user);
-		System.out.println(session.getId());
-		response.setResult(result);
-		response.setCode(Constant.REQUEST_SUCCESS_CODE);
-		response.setRemark(Constant.REQUEST_SUCCESS_DESC);
+		response.setCode(Constant.REQUEST_FAIL_CODE);
+		response.setRemark("系统错误，shiro没生效");
 		return response;
 	}
 	/**
